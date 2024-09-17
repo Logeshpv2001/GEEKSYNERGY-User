@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Registered Users</h2>
+        <table class="table table-striped" id="usersTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Profession</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadUsers() {
+            const response = await fetch('/api/users/all');
+            const users = await response.json();
+
+            const tableBody = document.querySelector('#usersTable tbody');
+            tableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.profession}</td>
+                    <td>
+                        <button onclick="editUser('${user._id}')">Edit</button>
+                        <button onclick="deleteUser('${user._id}')">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteUser(id) {
+            const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+            const data = await response.json();
+            alert(data.message);
+            loadUsers();
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>
